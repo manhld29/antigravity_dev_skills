@@ -1,0 +1,37 @@
+# Devcycle Phase-3 code-quality config — pylint.
+# Copy to the target app's repo root. Shares line length = 100 with flake8/isort
+# (setup.cfg) and black (pyproject.toml). The gate requires fail-under = 9.0.
+
+[MAIN]
+# Speed up analysis on multi-core machines; let pylint pick the count.
+jobs = 0
+# PySide6 generates members at runtime — stop false "no-member" on Qt classes.
+extension-pkg-allow-list = PySide6
+ignore = graphify-out,build,dist,.venv,venv
+
+[MESSAGES CONTROL]
+# Keep the signal high; re-enable any of these per-repo if you want them stricter.
+disable =
+    missing-module-docstring,
+    missing-class-docstring,
+    missing-function-docstring,
+    too-few-public-methods
+
+[FORMAT]
+max-line-length = 100
+
+[DESIGN]
+# Design smells — these back the SOLID gate (single responsibility, small interfaces).
+max-args = 6
+max-attributes = 10
+max-public-methods = 15
+max-returns = 6
+max-branches = 12
+max-statements = 50
+
+[BASIC]
+good-names = i,j,k,x,y,_,id,db,ui,fn
+
+[REPORTS]
+# The runner passes --fail-under=9.0; this is the score required to pass the gate.
+score = yes

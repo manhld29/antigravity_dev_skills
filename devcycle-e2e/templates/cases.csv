@@ -1,0 +1,3 @@
+case_id,title,preconditions,steps,test_data,expected_result,status,actual_result,screenshot,run_at
+TC-001,Login valid,App launched logged out,1. enter username;2. enter password;3. click Login,.env.dev creds,Dashboard greets the user by name,,,,
+TC-002,Login wrong password,App launched logged out,1. enter username;2. enter wrong password;3. click Login,username + bad password,Error label shown; dashboard not loaded,,,,

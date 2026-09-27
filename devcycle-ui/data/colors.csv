@@ -1,0 +1,9 @@
+Palette,Keywords,Primary,On Primary,Accent,Background,Surface,Text,Muted,Border,Danger,Dark Variant,Notes
+Neutral Blue,"business, neutral, default, saas, professional",#2563eb,#ffffff,#3b82f6,#f8fafc,#ffffff,#0f172a,#64748b,#e2e8f0,#dc2626,"bg #0f172a surface #1e293b text #e2e8f0","Safe default; map Primary->QPalette.Highlight, Text->WindowText"
+Slate Dark IDE,"dark, ide, developer, editor, low-glare",#569cd6,#1e1e1e,#4ec9b0,#1e1e1e,#252526,#d4d4d4,#858585,#3c3c3c,#f48771,"already dark","VS Code-like; set full dark QPalette + QSS to avoid white flashes"
+Fintech Trust,"fintech, finance, banking, trust, crypto",#0ea5e9,#ffffff,#22c55e,#f1f5f9,#ffffff,#0b1324,#475569,#cbd5e1,#ef4444,"bg #0b1324 surface #111c2e","Green=gain red=loss; never use color alone for up/down (add arrows)"
+Healthcare Calm,"healthcare, medical, calm, clinical, trust",#0d9488,#ffffff,#14b8a6,#f0fdfa,#ffffff,#134e4a,#5f7a76,#ccfbf1,#e11d48,"bg #062925 surface #0c3b35","Calm teal; ensure 4.5:1 for clinical data text"
+Warm Productivity,"productivity, notes, warm, friendly, calm",#ea580c,#ffffff,#f59e0b,#fffbeb,#ffffff,#1c1917,#78716c,#e7e5e4,#dc2626,"bg #1c1917 surface #292524","Warm neutrals; good for long reading sessions"
+Monitoring Status,"monitoring, devops, status, alerts, dashboard",#3b82f6,#ffffff,#8b5cf6,#0b0f17,#111827,#e5e7eb,#9ca3af,#1f2937,#ef4444,"already dark","Status set: ok #22c55e warn #f59e0b crit #ef4444 info #3b82f6"
+Grayscale Pro,"grayscale, monochrome, dense, data, admin",#111827,#ffffff,#2563eb,#ffffff,#f9fafb,#111827,#6b7280,#e5e7eb,#dc2626,"bg #0b0f17 surface #111827","One accent only; let data/color status carry meaning"
+High Contrast,"accessibility, high contrast, wcag, low vision",#0000ee,#ffffff,#ffbf00,#ffffff,#ffffff,#000000,#1a1a1a,#000000,#cc0000,"bg #000000 surface #000000 text #ffffff","Pure black/white; 2px amber focus; verify AAA 7:1 where possible"

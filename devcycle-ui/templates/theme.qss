@@ -1,0 +1,52 @@
+/* devcycle-ui — generated QSS stylesheet (token-driven).
+ * One source of truth for colors; pair with a QPalette set BEFORE show()
+ * (see references/theming.md). Replace the token values per the chosen palette;
+ * keep every rule referencing a token, never a scattered raw hex.
+ *
+ * Tokens (dark example):
+ *   accent #4f8cff · surface #1e1f22 · surface-alt #26282c · text #e6e6e6
+ *   text-muted #9aa0a6 · border #34373b · danger #e5484d
+ */
+
+QWidget#Root, QWidget {
+    background: #1e1f22;
+    color: #e6e6e6;
+    font-size: 10pt;
+}
+
+QGroupBox {
+    border: 1px solid #34373b;
+    border-radius: 6px;
+    margin-top: 12px;
+    padding: 8px;
+}
+QGroupBox::title { subcontrol-origin: margin; left: 8px; padding: 0 4px; }
+
+QLineEdit, QComboBox {
+    background: #26282c;
+    border: 1px solid #34373b;
+    border-radius: 4px;
+    padding: 6px 8px;
+    selection-background-color: #4f8cff;
+}
+QLineEdit:focus, QComboBox:focus { border: 1px solid #4f8cff; }
+
+QPushButton {
+    background: #26282c;
+    border: 1px solid #34373b;
+    border-radius: 4px;
+    padding: 6px 14px;
+}
+QPushButton:hover { border-color: #4f8cff; }
+QPushButton:pressed { background: #2f3237; }
+QPushButton:disabled { color: #6b7075; border-color: #2a2c30; }
+QPushButton#Primary { background: #4f8cff; border-color: #4f8cff; color: #0d1117; }
+QPushButton#Primary:hover { background: #6a9dff; }
+
+QProgressBar {
+    border: 1px solid #34373b;
+    border-radius: 4px;
+    text-align: center;
+    background: #26282c;
+}
+QProgressBar::chunk { background: #4f8cff; border-radius: 3px; }

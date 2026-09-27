@@ -1,0 +1,11 @@
+# Devcycle Phase-3 code-quality config — black (formatter used by `lint.py --fix`).
+# Merge these tables into the target app's existing pyproject.toml.
+# Line length = 100 to match flake8/isort (setup.cfg) and pylint (.pylintrc).
+
+[tool.black]
+line-length = 100
+target-version = ["py312"]
+extend-exclude = "graphify-out|build|dist|\\.venv|venv"
+
+# Note: isort is configured in setup.cfg (one source of truth). Do not also add a
+# [tool.isort] table here, or the two configs can drift.
