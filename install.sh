@@ -33,6 +33,11 @@ FORCE=0
 MODE="copy" # "copy" hoặc "link"
 CUSTOM_TARGET=""
 INSTALL_SECURITY_TOOLS=0
+UPGRADE_ENV=0
+AUTO_INSTALL_ENV=1
+UPDATE_REPO=0
+UPGRADE_TOOLS=0
+
 
 # ------------------------------------------------------------------------------
 # Danh mục nguồn GitHub của các bộ Skill (Fallback khi local chưa có)
@@ -130,6 +135,10 @@ log_skip() {
     echo -e "  ${YELLOW}⊘ [ĐÃ CÓ]${NC} $1 (bỏ qua)"
 }
 
+log_updated() {
+    echo -e "  ${CYAN}🔄 [CẬP NHẬT/FORCE]${NC} $1"
+}
+
 log_installed_local() {
     echo -e "  ${GREEN}✓ [CÀI TỪ THƯ MỤC]${NC} $1"
 }
@@ -137,6 +146,7 @@ log_installed_local() {
 log_installed_remote() {
     echo -e "  ${MAGENTA}⚡ [CLONE GITHUB & CÀI ĐẶT]${NC} $1"
 }
+
 
 # ------------------------------------------------------------------------------
 # Tự động phát hiện hệ điều hành & Thư mục đích của Antigravity IDE
@@ -196,14 +206,16 @@ copy_dir_cross_platform() {
     fi
 }
 
-UPGRADE_ENV=0
-AUTO_INSTALL_ENV=1
-
 # ------------------------------------------------------------------------------
 # Xử lý tham số dòng lệnh
 # ------------------------------------------------------------------------------
 while [[ $# -gt 0 ]]; do
     case "$1" in
+        --update|--upgrade)
+            UPDATE_REPO=1
+            FORCE=1
+            shift
+            ;;
         --target)
             CUSTOM_TARGET="$2"
             shift 2
@@ -232,12 +244,13 @@ while [[ $# -gt 0 ]]; do
             echo "Cách dùng: $0 [OPTIONS]"
             echo ""
             echo "Options:"
-            echo "  --target <DIR>       Chỉ định thư mục đích (mặc định: ~/.gemini/config/skills hoặc %USERPROFILE%/.gemini/config/skills)"
+            echo "  --update, --upgrade  Cập nhật & force update bộ skills: kéo Git mới nhất và ghi đè toàn bộ kỹ năng (không động đến môi trường Python/Node.js)"
             echo "  --force, -f          Cài đặt lại toàn bộ (ghi đè ngay cả khi skill đã có)"
-            echo "  --upgrade-env        Tự động nâng cấp Python & Node.js lên bản mới nhất ngay cả khi đã có"
+            echo "  --upgrade-env        Nâng cấp môi trường Python & Node.js của hệ thống lên bản mới nhất"
             echo "  --no-env-install     Bỏ qua bước tự động cài đặt Python/Node.js"
             echo "  --security-tools     Tự động cài đặt bộ công cụ an ninh mã nguồn & API (semgrep, bandit, pip-audit, detect-secrets, schemathesis, checkov)"
             echo "  --link               Tạo symlink thay vì copy file (khuyến nghị trên Linux/macOS)"
+            echo "  --target <DIR>       Chỉ định thư mục đích (mặc định: ~/.gemini/config/skills hoặc %USERPROFILE%/.gemini/config/skills)"
             echo "  --help, -h           Hiển thị hướng dẫn này"
             exit 0
             ;;
@@ -257,7 +270,37 @@ OS_INFO="$(uname -s 2>/dev/null || echo "Unknown")"
 echo -e "Hệ điều hành  : ${BOLD}${OS_INFO}${NC}"
 echo -e "Thư mục nguồn : ${BOLD}${SCRIPT_DIR}${NC}"
 echo -e "Thư mục đích  : ${CYAN}${BOLD}${TARGET_DIR}${NC}"
-echo -e "Chế độ cài đặt: ${BOLD}${MODE}${NC} (Force: $([[ ${FORCE} -eq 1 ]] && echo -e "${YELLOW}BẬT${NC}" || echo -e "${GREEN}TẮT${NC}"))\n"
+local_force_str="$([[ ${FORCE} -eq 1 ]] && echo -e "${YELLOW}BẬT (Ghi đè/Update)${NC}" || echo -e "${GREEN}TẮT${NC}")"
+echo -e "Chế độ cài đặt: ${BOLD}${MODE}${NC} (Force Update: ${local_force_str})"
+if [[ ${UPDATE_REPO} -eq 1 ]]; then
+    echo -e "Git Auto-pull : ${GREEN}${BOLD}BẬT${NC}"
+fi
+if [[ ${UPGRADE_TOOLS} -eq 1 ]]; then
+    echo -e "Nâng cấp Tools: ${GREEN}${BOLD}BẬT (Graft, Graphify, Ruff)${NC}"
+fi
+echo ""
+
+# ------------------------------------------------------------------------------
+# 0. Tự động đồng bộ mã nguồn Git nếu kích hoạt --update hoặc --upgrade
+# ------------------------------------------------------------------------------
+if [[ ${UPDATE_REPO} -eq 1 ]]; then
+    log_info "0. Đang kiểm tra và đồng bộ cập nhật từ Git repository..."
+    if command -v git &>/dev/null && git -C "${SCRIPT_DIR}" rev-parse --is-inside-work-tree &>/dev/null; then
+        if git -C "${SCRIPT_DIR}" remote get-url origin &>/dev/null; then
+            log_info "  Đang chạy git pull từ remote origin..."
+            if git -C "${SCRIPT_DIR}" pull --ff-only 2>/dev/null || git -C "${SCRIPT_DIR}" pull 2>/dev/null; then
+                log_success "Đồng bộ mã nguồn từ Git repository thành công!"
+            else
+                log_warning "Không thể git pull tự động (có uncommitted changes hoặc xung đột nhánh). Tiếp tục đồng bộ từ file local."
+            fi
+        else
+            log_info "  Thư mục git chưa có remote origin, tiếp tục với mã nguồn nội bộ."
+        fi
+    else
+        log_info "  Thư mục nguồn không phải Git repo hoặc chưa cài git, bỏ qua git pull."
+    fi
+fi
+
 
 # ------------------------------------------------------------------------------
 # 1. Kiểm tra & Tự động cài đặt Môi trường (Python & Node.js mới nhất)
@@ -464,7 +507,11 @@ log_info "2. Đang kiểm tra các công cụ CLI cần thiết..."
 
 # 2.1 Graft (@nanonets/graft)
 if command -v graft &>/dev/null; then
-    log_success "Graft: Đã cài đặt ($(graft --version 2>/dev/null || echo 'OK'))"
+    if [[ ${UPGRADE_TOOLS} -eq 1 ]]; then
+        log_info "Đang nâng cấp Graft (@nanonets/graft)..."
+        npm install -g @nanonets/graft@latest 2>/dev/null || npm install --prefix "$HOME/.local" -g @nanonets/graft@latest 2>/dev/null || true
+    fi
+    log_success "Graft: Đã sẵn sàng ($(graft --version 2>/dev/null || echo 'OK'))"
 else
     if command -v npm &>/dev/null; then
         log_info "Đang cài đặt Graft (@nanonets/graft)..."
@@ -479,7 +526,17 @@ fi
 
 # 2.2 Graphify (graphifyy)
 if command -v graphify &>/dev/null; then
-    log_success "Graphify: Đã cài đặt ($(graphify --version 2>/dev/null || echo 'OK'))"
+    if [[ ${UPGRADE_TOOLS} -eq 1 ]]; then
+        log_info "Đang nâng cấp Graphify (graphifyy)..."
+        if command -v uv &>/dev/null; then
+            uv tool upgrade graphifyy 2>/dev/null || uv tool install --reinstall graphifyy 2>/dev/null || true
+        elif command -v pipx &>/dev/null; then
+            pipx upgrade graphifyy 2>/dev/null || true
+        elif [[ -n "${PYTHON_CMD}" ]] && ${PYTHON_CMD} -m pip --version &>/dev/null; then
+            ${PYTHON_CMD} -m pip install --upgrade --user graphifyy 2>/dev/null || ${PYTHON_CMD} -m pip install --upgrade --break-system-packages --user graphifyy 2>/dev/null || true
+        fi
+    fi
+    log_success "Graphify: Đã sẵn sàng ($(graphify --version 2>/dev/null || echo 'OK'))"
 else
     if [[ -n "${PYTHON_CMD}" ]]; then
         log_info "Đang kiểm tra cài đặt Graphify (graphifyy)..."
@@ -498,7 +555,17 @@ fi
 
 # 2.3 Ruff (Linter siêu tốc)
 if command -v ruff &>/dev/null; then
-    log_success "Ruff: Đã cài đặt ($(ruff --version 2>/dev/null || echo 'OK'))"
+    if [[ ${UPGRADE_TOOLS} -eq 1 ]]; then
+        log_info "Đang nâng cấp Ruff..."
+        if command -v uv &>/dev/null; then
+            uv tool upgrade ruff 2>/dev/null || uv tool install --reinstall ruff 2>/dev/null || true
+        elif command -v pipx &>/dev/null; then
+            pipx upgrade ruff 2>/dev/null || true
+        elif [[ -n "${PYTHON_CMD}" ]] && ${PYTHON_CMD} -m pip --version &>/dev/null; then
+            ${PYTHON_CMD} -m pip install --upgrade --user ruff 2>/dev/null || ${PYTHON_CMD} -m pip install --upgrade --break-system-packages --user ruff 2>/dev/null || true
+        fi
+    fi
+    log_success "Ruff: Đã sẵn sàng ($(ruff --version 2>/dev/null || echo 'OK'))"
 else
     if command -v uv &>/dev/null; then
         uv tool install ruff || true
@@ -660,6 +727,7 @@ clone_and_install_remote_skill() {
 log_info "4. Đang tiến hành kiểm tra & triển khai từng Skill..."
 
 SKIPPED_COUNT=0
+UPDATED_COUNT=0
 LOCAL_COUNT=0
 REMOTE_COUNT=0
 ERROR_COUNT=0
@@ -675,20 +743,36 @@ for skill in "${SORTED_SKILLS[@]}"; do
         continue
     fi
 
-    # Nếu chưa có ở Antigravity IDE (hoặc người dùng chỉ định --force):
+    target_already_existed=0
+    if [[ -f "${target_skill_path}/SKILL.md" ]]; then
+        target_already_existed=1
+    fi
+
+    # Nếu chưa có ở Antigravity IDE (hoặc người dùng chỉ định --force / --update / --upgrade):
     if [[ -f "${local_skill_path}/SKILL.md" ]]; then
-        # Đã có trong thư mục hiện tại -> Thực hiện cài luôn!
+        # Đã có trong thư mục hiện tại -> Thực hiện cài / cập nhật đè!
         if [[ "${MODE}" == "link" ]]; then
             ln -sfn "${local_skill_path}" "${target_skill_path}"
         else
             copy_dir_cross_platform "${local_skill_path}" "${target_skill_path}"
         fi
-        log_installed_local "${skill}"
-        LOCAL_COUNT=$((LOCAL_COUNT + 1))
+
+        if [[ ${target_already_existed} -eq 1 ]]; then
+            log_updated "${skill}"
+            UPDATED_COUNT=$((UPDATED_COUNT + 1))
+        else
+            log_installed_local "${skill}"
+            LOCAL_COUNT=$((LOCAL_COUNT + 1))
+        fi
     else
         # Chưa có trong thư mục này -> Clone từ GitHub và cài đặt!
         if clone_and_install_remote_skill "${skill}"; then
-            REMOTE_COUNT=$((REMOTE_COUNT + 1))
+            if [[ ${target_already_existed} -eq 1 ]]; then
+                log_updated "${skill}"
+                UPDATED_COUNT=$((UPDATED_COUNT + 1))
+            else
+                REMOTE_COUNT=$((REMOTE_COUNT + 1))
+            fi
         else
             ERROR_COUNT=$((ERROR_COUNT + 1))
         fi
@@ -718,7 +802,10 @@ echo -e "${GREEN}${BOLD}========================================================
 echo -e "Thư mục cài đặt Antigravity: ${CYAN}${BOLD}${TARGET_DIR}${NC}"
 echo -e "Tổng số skill sẵn sàng     : ${BOLD}${TOTAL_AVAILABLE} skills${NC}"
 echo -e "  • Đã có sẵn (giữ nguyên) : ${YELLOW}${SKIPPED_COUNT}${NC}"
-echo -e "  • Cài đặt từ thư mục     : ${GREEN}${LOCAL_COUNT}${NC}"
+if [[ ${UPDATED_COUNT} -gt 0 ]]; then
+    echo -e "  • Cập nhật / Ghi đè      : ${CYAN}${UPDATED_COUNT}${NC}"
+fi
+echo -e "  • Cài đặt mới từ thư mục : ${GREEN}${LOCAL_COUNT}${NC}"
 echo -e "  • Clone GitHub & cài đặt : ${MAGENTA}${REMOTE_COUNT}${NC}"
 if [[ ${ERROR_COUNT} -gt 0 ]]; then
     echo -e "  • Lỗi cần kiểm tra       : ${RED}${ERROR_COUNT}${NC}"

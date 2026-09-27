@@ -25,6 +25,8 @@ Hỗ trợ **tất cả các ngôn ngữ lập trình** (*TypeScript, JavaScript
 ### Các tùy chọn nâng cao:
 ```bash
 ./install.sh --help            # Xem trợ giúp
+./install.sh --update          # Cập nhật bộ skills: kéo Git mới nhất & force update ghi đè toàn bộ kỹ năng (chỉ tác động skills)
+./install.sh --upgrade         # Tương tự --update: đồng bộ và cập nhật lại toàn bộ bộ skills (không đụng môi trường runtime)
 ./install.sh --force           # Cài đặt lại và ghi đè toàn bộ kỹ năng
 ./install.sh --security-tools  # Cài đặt sẵn bộ công cụ an ninh (semgrep, bandit, pip-audit, detect-secrets, schemathesis, checkov)
 ./install.sh --link            # Dùng symbolic link thay vì copy
