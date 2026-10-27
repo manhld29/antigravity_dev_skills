@@ -2,7 +2,7 @@
 
 Bộ sưu tập kỹ năng toàn diện (**Full Skills Suite**) chuẩn **Senior Principal Software Engineer & Red-Team Security Architect** dành cho **Google Antigravity AI Assistant**.
 
-Toàn bộ **46 skills** đều là các **thư mục thực độc lập (100% Real Directories - Zero Symlinks)**, chứa đầy đủ mã nguồn, tài liệu hướng dẫn (`SKILL.md`), scripts thực thi và các asset tương ứng được đồng bộ trực tiếp từ các repository chính thức trên GitHub.
+Toàn bộ **47 skills** đều là các **thư mục thực độc lập (100% Real Directories - Zero Symlinks)**, chứa đầy đủ mã nguồn, tài liệu hướng dẫn (`SKILL.md`), scripts thực thi và các asset tương ứng được đồng bộ trực tiếp từ các repository chính thức trên GitHub.
 
 Hỗ trợ **tất cả các ngôn ngữ lập trình** (*TypeScript, JavaScript, Python, Go, Rust, Java, PHP, C, C++, Swift, Dart, Ruby, R, C#, Kotlin*) và **toàn bộ các framework** tương ứng.
 
@@ -58,10 +58,11 @@ Tất cả các skill đã được trích xuất thành các thư mục độc 
 | **Animation & Interaction** | [emilkowalski/skills](https://github.com/emilkowalski/skills.git) | Emil Kowalski |
 | **Aesthetic & Taste Design** | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill.git) | Leonxlnx |
 | **Impeccable Design System** | [pbakaus/impeccable](https://github.com/pbakaus/impeccable.git) | Paul Bakaus |
+| **Frontend Design** | [anthropics/claude-code](https://github.com/anthropics/claude-code/tree/main/plugins/frontend-design) | Anthropic PBC |
 
 ---
 
-## 📦 Danh Mục 46 Skills Độc Lập
+## 📦 Danh Mục 47 Skills Độc Lập
 
 ### 1. DevCycle Lifecycle Suite (14 Skills)
 - `devcycle`: Master Driver điều phối 8 phase tự động từ ý tưởng đến bàn giao.
@@ -79,9 +80,10 @@ Tất cả các skill đã được trích xuất thành các thư mục độc 
 - `jira-fetch`: Đọc thông tin ticket, mô tả và file đính kèm từ Jira REST API.
 - `jira-bugfix`: Quy trình sửa lỗi test-first điều phối bởi Jira ticket.
 
-### 2. UI/UX, Animation & Design Intelligence (28 Skills)
+### 2. UI/UX, Animation & Design Intelligence (29 Skills)
 - `animate`, `animate-expo`, `animation-vocabulary`, `apple-design`, `emil-design-eng`, `find-animation-opportunities`, `improve-animations`, `review-animations`, `pick-ui-library`, `ask-sonner`, `mobile-native`, `prototype`, `write-swift` *(từ emilkowalski/skills)*.
 - `taste-skill-web`, `taste-skill-v1`, `brutalist-skill`, `minimalist-skill`, `output-skill`, `redesign-skill`, `soft-skill`, `stitch-skill`, `brandkit`, `gpt-tasteskill`, `imagegen-frontend-mobile`, `imagegen-frontend-web`, `image-to-code-skill` *(từ Leonxlnx/taste-skill)*.
+- `frontend-design` *(từ anthropics/claude-code)*: Định hướng thẩm mỹ khác biệt, loại bỏ khuôn mẫu AI, quy trình 2 bước Plan-Critique và copywriting chuẩn mực.
 - `impeccable-design` *(từ pbakaus/impeccable)*.
 - `ui-ux-pro-max` *(Design Intelligence System)*.
 

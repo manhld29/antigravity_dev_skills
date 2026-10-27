@@ -45,8 +45,9 @@ UPGRADE_TOOLS=0
 REPO_EMIL="https://github.com/emilkowalski/skills.git"
 REPO_TASTE="https://github.com/Leonxlnx/taste-skill.git"
 REPO_IMPECCABLE="https://github.com/pbakaus/impeccable.git"
+REPO_ANTHROPIC="https://github.com/anthropics/claude-code.git"
 
-# Danh mục 46 skills chuẩn
+# Danh mục 47 skills chuẩn
 KNOWN_SKILLS=(
     # 1. DevCycle Lifecycle Suite & Core Senior Engineering
     "devcycle"
@@ -101,6 +102,9 @@ KNOWN_SKILLS=(
 
     # 4. Impeccable Design System (pbakaus/impeccable)
     "impeccable-design"
+
+    # 5. Distinctive Frontend Design (Anthropic)
+    "frontend-design"
 )
 
 # ------------------------------------------------------------------------------
@@ -669,6 +673,11 @@ clone_and_install_remote_skill() {
         impeccable-design)
             repo_url="${REPO_IMPECCABLE}"
             sub_path="plugin/skills/impeccable"
+            ;;
+        # Anthropic Claude Code skill
+        frontend-design)
+            repo_url="${REPO_ANTHROPIC}"
+            sub_path="plugins/frontend-design/skills/frontend-design"
             ;;
         *)
             repo_url=""

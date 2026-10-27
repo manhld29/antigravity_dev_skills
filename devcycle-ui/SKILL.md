@@ -1,6 +1,6 @@
 ---
 name: devcycle-ui
-description: "UI/UX builder & design intelligence based on NextLevelBuilder UI-UX Pro Max standards + taste-skill (anti-slop) + impeccable (award-winning design director) + emilkowalski/skills (motion & animation). Supports Web (Tailwind, Vanilla CSS, React, Vue, Next.js) and Desktop (PySide6, Qt, QML, QSS). Triggers: \"design UI\", \"build UI\", \"style this window\", \"create component\", \"devcycle-ui\", \"thiết kế giao diện\", \"animate\", \"motion\", \"polish design\", \"impeccable\"."
+description: "UI/UX builder & design intelligence based on NextLevelBuilder UI-UX Pro Max standards + Anthropic frontend-design + taste-skill (anti-slop) + impeccable (award-winning design director) + emilkowalski/skills (motion & animation). Supports Web (Tailwind, Vanilla CSS, React, Vue, Next.js) and Desktop (PySide6, Qt, QML, QSS). Triggers: \"design UI\", \"build UI\", \"style this window\", \"create component\", \"devcycle-ui\", \"frontend-design\", \"thiết kế giao diện\", \"animate\", \"motion\", \"polish design\", \"impeccable\"."
 argument-hint: "What screen, component, or theme to design?"
 ---
 
@@ -9,28 +9,52 @@ argument-hint: "What screen, component, or theme to design?"
 Provides world-class design systems, component patterns, and visual styling for both
 **Web applications** (Tailwind CSS, Vanilla CSS, React, Next.js) and **Desktop apps** (PySide6, Qt, QML, QSS).
 
-Powered by **3 elite external skill packs** installed at system level:
+Powered by **4 elite external skill packs** installed at system level:
 
 | Pack | Description | Skills available |
 |------|-------------|-----------------|
+| **frontend-design** (Anthropic) | Distinctive, opinionated visual design & anti-template lead | `frontend-design` |
 | **taste-skill** (Leonxlnx) | Anti-slop frontend framework | `taste-skill-web`, `brutalist-skill`, `minimalist-skill`, `soft-skill`, `redesign-skill`, `output-skill`, `stitch-skill` |
 | **impeccable** (pbakaus) | Award-winning design director AI | `impeccable-design` with commands: craft, shape, audit, polish, bolder, animate, colorize, typeset, layout, delight |
 | **emilkowalski/skills** | Motion & animation engineering | `animate`, `review-animations`, `improve-animations`, `find-animation-opportunities`, `animation-vocabulary`, `apple-design`, `pick-ui-library` |
 
 ---
 
-## 0. BRIEF INFERENCE (Read the Room First — from taste-skill)
+## 0. BRIEF INFERENCE & SUBJECT GROUNDING (Read the Room First)
 
-Before touching any code, **infer what the user actually wants**. State a one-line "Design Read":
+Before touching any code, act as the design lead: **ground your design in the subject matter** (its industry, materials, vernacular) and infer what the user actually wants. State a clear "Design Read":
 
-> **"Reading this as: `<page kind>` for `<audience>`, with a `<vibe>` language, leaning toward `<design system or aesthetic family>`."**
+> **"Reading this as: `<subject & page kind>` for `<target audience>`, solving `<primary job>`, with a `<vibe>` language, leaning toward `<design system or aesthetic family>`."**
 
-### Anti-Default Discipline
-NEVER default to: AI-purple gradients, centered hero over dark mesh, three equal feature cards, generic glassmorphism everywhere, Inter + slate-900. These are LLM defaults. Reach past them based on the design read.
+### Anti-Default Discipline (Purging AI Tells — from Anthropic & taste-skill)
+NEVER fall into the 5 classic tells of AI-generated design:
+1. **Cream + Terracotta serif**: Warm cream background (~`#F4F1EA`) with high-contrast serif display and clay/terracotta accent (~`#D97757`).
+2. **Acid-on-dark**: Near-black background with a single bright acid-green or vermilion accent.
+3. **Broadsheet newspaper**: Hairline rules, zero border-radius, dense multi-column newspaper styling.
+4. **SaaS-card kit**: Content chopped into identical rounded cards, uniform border-radius, soft grey shadows (`rgba(0,0,0,.1)`), gradient washes as decoration.
+5. **Template chrome & false sequencing**: Tracked-out ALL-CAPS eyebrows, middle dots (`A · B · C`), spaced em dash (`WORD — fragment`), `→` appended to buttons, single-word highlights in headings, or arbitrary `01 / 02 / 03` numbered markers when content is not a sequence.
 
 ---
 
-## 1. Core Design Aesthetics (Zero-Mediocrity Policy)
+## 1. Two-Pass Design & Critique Workflow (from Anthropic frontend-design)
+
+### Pass 1: Plan & Ground
+Brainstorm a compact design plan grounded in the subject before coding:
+- **Palette**: Define 4–6 named hex values tailored to the subject.
+- **Typography**: 1 or 2 distinct font families following *The Elements of Typographic Style*. Keep line lengths < 80 characters.
+- **Layout**: Clear prose concept + ASCII wireframe with intentional alignment (left, center, or justified).
+- **Principles**: What makes this specific experience memorable and unique.
+
+### Pass 2: Self-Critique & Purge
+Review the plan against the brief before writing code:
+- Did any generic AI default slip in? If so, revise it and state why.
+- **"Spend your boldness in one place"**: Let one element (hero, typography, interactive moment) be memorable; keep everything else quiet and disciplined. (Chanel rule: remove one accessory).
+- **CSS Specificity**: Ensure clean hierarchy; prevent conflicting classes (e.g. `.section` vs `.cta` padding/margins).
+- **Writing in Design**: Words are design content, not decoration. Use active voice ("Save changes", not "Submit"), match CTA verbs with toasts ("Publish" ➔ "Published"), no apologetic error messages, and treat empty states as invitations to act.
+
+---
+
+## 2. Core Design Aesthetics (Zero-Mediocrity Policy)
 
 1. **Color & Elevation**:
    - Avoid generic base colors (pure red, green, blue). Use curated HSL tokens, sleek dark modes, and subtle gradients.
@@ -39,12 +63,12 @@ NEVER default to: AI-purple gradients, centered hero over dark mesh, three equal
    - Modern typography (Inter, Plus Jakarta Sans, Outfit, Roboto, custom serifs for editorial).
    - Clear modular scale hierarchy (H1, H2, Body, Small) with intentional leading and tracking.
 3. **Dynamic Motion & Micro-Animations**:
-   - Apply Emil Kowalski's animation philosophy: animate only what earns it, right curve, right duration.
+   - Apply Emil Kowalski & Anthropic motion philosophy: animate only what earns it, sparing, right curve, right duration.
    - Smooth hover states, active transitions, staggered reveals, spatial consistency.
 
 ---
 
-## 2. The Three Dials (from taste-skill)
+## 3. The Three Dials (from taste-skill)
 
 After the design read, set three dials that gate every layout, motion, and density decision:
 
@@ -54,7 +78,7 @@ After the design read, set three dials that gate every layout, motion, and densi
 
 ---
 
-## 3. Design Mode Selection (from impeccable)
+## 4. Design Mode Selection (from impeccable)
 
 Choose the correct mode based on the surface type:
 
@@ -65,7 +89,7 @@ Choose the correct mode based on the surface type:
 
 ---
 
-## 4. Animation Rules (from emilkowalski/skills)
+## 5. Animation Rules (from emilkowalski/skills & Anthropic restraint)
 
 ### Should it animate at all?
 
@@ -79,12 +103,13 @@ Choose the correct mode based on the surface type:
 ### Animation Hard Rules
 1. No `ease-in` on entrances. No `scale(0)`. No keyframes on toasts.
 2. Every curve, duration, spring config from established tables — never invent values.
-3. Reduced motion gating ships **with** the animation, not as follow-up.
-4. Cheapest tool that works. Don't install a library for a fade.
+3. Non-user-triggered motion used sparingly (one orchestrated hero moment beats scattered entrance animations on every card).
+4. Reduced motion gating ships **with** the animation, not as follow-up.
+5. Cheapest tool that works. Don't install a library for a fade.
 
 ---
 
-## 5. Design Intelligence Knowledge Search (BM25 CLI)
+## 6. Design Intelligence Knowledge Search (BM25 CLI)
 
 Search the bundled design database without leaving the terminal:
 
@@ -104,7 +129,10 @@ python ~/.gemini/config/skills/devcycle-ui/scripts/search.py "modern dark" --des
 
 ---
 
-## 6. Skill Delegation Guide
+## 7. Skill Delegation Guide
+
+### For distinctive, opinionated aesthetic direction & anti-template UI
+→ Activate `frontend-design` skill (Anthropic design lead framework)
 
 ### For anti-slop frontend / landing pages
 → Activate `taste-skill-web` skill for detailed taste enforcement
@@ -128,12 +156,13 @@ python ~/.gemini/config/skills/devcycle-ui/scripts/search.py "modern dark" --des
 
 ---
 
-## 7. Web & Desktop Workflows
+## 8. Web & Desktop Workflows
 
 ### Web Applications (React / Vue / HTML + CSS)
+- Execute Pass 1 (Plan & Ground) and Pass 2 (Self-Critique & Purge) before coding.
 - Define CSS custom properties / Tailwind theme tokens (`--primary`, `--surface`, `--accent`).
 - Separate UI view components from state / data-fetching logic.
-- Apply taste-skill anti-slop discipline before shipping.
+- Apply taste-skill anti-slop discipline and Anthropic anti-default checks before shipping.
 - Run impeccable `audit` + `polish` before final delivery.
 - Verify with browser testing and screenshot captures.
 
@@ -146,20 +175,24 @@ python ~/.gemini/config/skills/devcycle-ui/scripts/search.py "modern dark" --des
 
 ---
 
-## 8. Quality Gates (before shipping any UI)
+## 9. Quality Gates (before shipping any UI)
 
-1. ✅ Design Read declared and dials set
-2. ✅ No LLM-default aesthetics (anti-slop check)
-3. ✅ Motion passes Emil Kowalski animation rules
-4. ✅ Impeccable craft floor respected (no a11y violations, responsive)
-5. ✅ Screenshot captured for visual verification
+1. ✅ Subject matter grounded & Design Read declared (Brief Inference)
+2. ✅ Two-pass plan & self-critique performed ("spend boldness in one place")
+3. ✅ No LLM-default aesthetics (purged 5 AI tells & anti-slop check)
+4. ✅ Typography deliberate (< 80 chars line length, no single-word highlights, sentence case)
+5. ✅ Copywriting checked (active voice, matching CTA/toast verbs, user-centric)
+6. ✅ Motion passes Emil Kowalski & Anthropic restraint rules (sparing, user-triggered)
+7. ✅ Impeccable craft floor respected (no a11y violations, responsive, keyboard focus)
+8. ✅ Screenshot captured for visual verification
 
 ---
 
-## 9. Liên Kết Toàn Diện Hệ Sinh Thái UI/UX (Comprehensive UI Skill Ecosystem)
+## 10. Liên Kết Toàn Diện Hệ Sinh Thái UI/UX (Comprehensive UI Skill Ecosystem)
 
 | Nhóm Năng Lực | Kỹ Năng Tích Hợp | Vai Trò & Trường Hợp Kích Hoạt |
 |---|---|---|
+| **Distinctive Aesthetics** | [frontend-design](../frontend-design/SKILL.md) | Định hướng thẩm mỹ khác biệt của Anthropic: loại bỏ khuôn mẫu AI, kiểu chữ có chủ đích, quy trình 2 bước Plan-Critique và copywriting chuẩn mực. |
 | **Design Core** | [ui-ux-pro-max](../ui-ux-pro-max/SKILL.md) | Chuẩn mực thiết kế NextLevelBuilder: design tokens, layout hierarchy và responsiveness. |
 | **Design Direction** | [impeccable-design](../impeccable-design/SKILL.md) | Giám đốc thiết kế AI: các lệnh `craft`, `shape`, `polish`, `audit`, `bolder`, `typeset`, `delight`. |
 | **Anti-Slop Web** | [taste-skill-web](../taste-skill-web/SKILL.md) / [taste-skill-v1](../taste-skill-v1/SKILL.md) | Chống template AI sáo rỗng, tạo typography rộng và bento grids phá cách. |
