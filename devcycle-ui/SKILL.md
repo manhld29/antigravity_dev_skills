@@ -16,7 +16,7 @@ Powered by **4 elite external skill packs** installed at system level:
 | **frontend-design** (Anthropic) | Distinctive, opinionated visual design & anti-template lead | `frontend-design` |
 | **taste-skill** (Leonxlnx) | Anti-slop frontend framework | `taste-skill-web`, `brutalist-skill`, `minimalist-skill`, `soft-skill`, `redesign-skill`, `output-skill`, `stitch-skill` |
 | **impeccable** (pbakaus) | Award-winning design director AI | `impeccable-design` with commands: craft, shape, audit, polish, bolder, animate, colorize, typeset, layout, delight |
-| **emilkowalski/skills** | Motion & animation engineering | `animate`, `review-animations`, `improve-animations`, `find-animation-opportunities`, `animation-vocabulary`, `apple-design`, `pick-ui-library` |
+| **emilkowalski/skills** | Motion & animation engineering | `animate`, `review-animations`, `improve-animations`, `find-animation-opportunities`, `animation-performance`, `break-ui`, `animation-vocabulary`, `apple-design`, `pick-ui-library` |
 
 ---
 
@@ -204,6 +204,8 @@ python ~/.gemini/config/skills/devcycle-ui/scripts/search.py "modern dark" --des
 | **Micro-Interactions** | [emil-design-eng](../emil-design-eng/SKILL.md) | Triết lý Emil Kowalski về những chi tiết vi mô vô hình tạo cảm giác phần mềm cao cấp. |
 | **Motion Discovery** | [find-animation-opportunities](../find-animation-opportunities/SKILL.md) | Rà soát giao diện và đề xuất các vị trí nên bổ sung micro-animation có chủ đích. |
 | **Motion Audit** | [improve-animations](../improve-animations/SKILL.md), [review-animations](../review-animations/SKILL.md) | Đánh giá và khắc phục các animation bị giật, sai thời lượng hoặc sai easing. |
+| **Motion Performance** | [animation-performance](../animation-performance/SKILL.md) | Tối ưu hóa hiệu năng animation: frame budget 60/120fps, composite-only layers, và triệt tiêu drop frames. |
+| **UI Stress Test** | [break-ui](../break-ui/SKILL.md) | Phá vỡ UI bằng dữ liệu khắc nghiệt (tên cực dài, email bất quy tắc, số lượng 0/1/1000) với toggle Demo/Worst-case. |
 | **GSAP Advanced** | [gpt-tasteskill](../gpt-tasteskill/SKILL.md) | Hiệu ứng cuộn nâng cao GSAP ScrollTrigger, pinning, scrubbing và gapless bento grid. |
 | **Chuyên Biệt Thẩm Mỹ** | [brutalist-skill](../brutalist-skill/SKILL.md), [minimalist-skill](../minimalist-skill/SKILL.md), [soft-skill](../soft-skill/SKILL.md), [stitch-skill](../stitch-skill/SKILL.md) | Chuyển đổi linh hoạt giữa Industrial Brutalist, Clean Minimalist, Luxury Agency, Google Stitch. |
 | **Sinh Ảnh ➔ Code** | [image-to-code-skill](../image-to-code-skill/SKILL.md), [imagegen-frontend-web](../imagegen-frontend-web/SKILL.md), [imagegen-frontend-mobile](../imagegen-frontend-mobile/SKILL.md) | Tự động tạo ảnh mockup chất lượng cao trước, sau đó chuyển thành mã nguồn HTML/CSS chuẩn xác. |

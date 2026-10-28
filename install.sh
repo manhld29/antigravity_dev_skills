@@ -37,6 +37,7 @@ UPGRADE_ENV=0
 AUTO_INSTALL_ENV=1
 UPDATE_REPO=0
 UPGRADE_TOOLS=0
+SYNC_UPSTREAM=0
 
 
 # ------------------------------------------------------------------------------
@@ -45,9 +46,10 @@ UPGRADE_TOOLS=0
 REPO_EMIL="https://github.com/emilkowalski/skills.git"
 REPO_TASTE="https://github.com/Leonxlnx/taste-skill.git"
 REPO_IMPECCABLE="https://github.com/pbakaus/impeccable.git"
-REPO_ANTHROPIC="https://github.com/anthropics/claude-code.git"
+REPO_ANTHROPIC="https://github.com/anthropics/claude-plugins-official.git"
+REPO_REA="https://github.com/morluto/rea.git"
 
-# Danh mục 47 skills chuẩn
+# Danh mục 50 skills chuẩn
 KNOWN_SKILLS=(
     # 1. DevCycle Lifecycle Suite & Core Senior Engineering
     "devcycle"
@@ -73,9 +75,11 @@ KNOWN_SKILLS=(
     # 2. Animation & Interaction (emilkowalski/skills)
     "animate"
     "animate-expo"
+    "animation-performance"
     "animation-vocabulary"
     "apple-design"
     "ask-sonner"
+    "break-ui"
     "emil-design-eng"
     "find-animation-opportunities"
     "improve-animations"
@@ -105,6 +109,9 @@ KNOWN_SKILLS=(
 
     # 5. Distinctive Frontend Design (Anthropic)
     "frontend-design"
+
+    # 6. Reverse Engineering & Binary Analysis (morluto/rea)
+    "reverse-engineer-anything"
 )
 
 # ------------------------------------------------------------------------------
@@ -217,6 +224,12 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --update|--upgrade)
             UPDATE_REPO=1
+            SYNC_UPSTREAM=1
+            FORCE=1
+            shift
+            ;;
+        --sync-upstream)
+            SYNC_UPSTREAM=1
             FORCE=1
             shift
             ;;
@@ -248,7 +261,8 @@ while [[ $# -gt 0 ]]; do
             echo "Cách dùng: $0 [OPTIONS]"
             echo ""
             echo "Options:"
-            echo "  --update, --upgrade  Cập nhật & force update bộ skills: kéo Git mới nhất và ghi đè toàn bộ kỹ năng (không động đến môi trường Python/Node.js)"
+            echo "  --update, --upgrade  Cập nhật & force update bộ skills: kéo Git mới nhất, đồng bộ từ upstream GitHub và ghi đè toàn bộ kỹ năng"
+            echo "  --sync-upstream      Đồng bộ các kỹ năng ngoại vi trực tiếp từ các GitHub repository gốc (Emil Kowalski, Taste, Impeccable, Anthropic, REA)"
             echo "  --force, -f          Cài đặt lại toàn bộ (ghi đè ngay cả khi skill đã có)"
             echo "  --upgrade-env        Nâng cấp môi trường Python & Node.js của hệ thống lên bản mới nhất"
             echo "  --no-env-install     Bỏ qua bước tự động cài đặt Python/Node.js"
@@ -278,6 +292,9 @@ local_force_str="$([[ ${FORCE} -eq 1 ]] && echo -e "${YELLOW}BẬT (Ghi đè/Upd
 echo -e "Chế độ cài đặt: ${BOLD}${MODE}${NC} (Force Update: ${local_force_str})"
 if [[ ${UPDATE_REPO} -eq 1 ]]; then
     echo -e "Git Auto-pull : ${GREEN}${BOLD}BẬT${NC}"
+fi
+if [[ ${SYNC_UPSTREAM} -eq 1 ]]; then
+    echo -e "Upstream Sync : ${GREEN}${BOLD}BẬT (Emil, Taste, Impeccable, Anthropic, REA)${NC}"
 fi
 if [[ ${UPGRADE_TOOLS} -eq 1 ]]; then
     echo -e "Nâng cấp Tools: ${GREEN}${BOLD}BẬT (Graft, Graphify, Ruff)${NC}"
@@ -652,9 +669,9 @@ clone_and_install_remote_skill() {
 
     case "${skill}" in
         # Emil Kowalski skills
-        animate|animate-expo|animation-vocabulary|apple-design|ask-sonner|emil-design-eng|\
-        find-animation-opportunities|improve-animations|mobile-native|pick-ui-library|\
-        prototype|review-animations|write-swift)
+        animate|animate-expo|animation-performance|animation-vocabulary|apple-design|ask-sonner|\
+        break-ui|emil-design-eng|find-animation-opportunities|improve-animations|mobile-native|\
+        pick-ui-library|prototype|review-animations|write-swift)
             repo_url="${REPO_EMIL}"
             sub_path="skills/${skill}"
             ;;
@@ -678,6 +695,11 @@ clone_and_install_remote_skill() {
         frontend-design)
             repo_url="${REPO_ANTHROPIC}"
             sub_path="plugins/frontend-design/skills/frontend-design"
+            ;;
+        # Reverse Engineer Anything (morluto/rea)
+        reverse-engineer-anything)
+            repo_url="${REPO_REA}"
+            sub_path=".agents/skills/reverse-engineer-anything"
             ;;
         *)
             repo_url=""
@@ -712,12 +734,20 @@ clone_and_install_remote_skill() {
 
     local extracted_src="${cached_repo}/${sub_path}"
     if [[ ! -f "${extracted_src}/SKILL.md" ]]; then
+        local local_fallback="${SCRIPT_DIR}/${skill}"
+        if [[ -f "${local_fallback}/SKILL.md" ]]; then
+            log_warning "Skill '${skill}' không có trên upstream repo, sử dụng bản nội bộ."
+            copy_dir_cross_platform "${local_fallback}" "${TARGET_DIR}/${skill}"
+            return 0
+        fi
         log_error "Không tìm thấy SKILL.md tại ${sub_path} trong repo ${repo_name}."
         return 1
     fi
 
-    # Lưu lại vào SCRIPT_DIR để lần sau có sẵn luôn (nhanh chóng)
-    copy_dir_cross_platform "${extracted_src}" "${SCRIPT_DIR}/${skill}"
+    # Lưu lại vào SCRIPT_DIR để đồng bộ kho nguồn (nếu khác TARGET_DIR)
+    if [[ "${SCRIPT_DIR}" != "${TARGET_DIR}" ]]; then
+        copy_dir_cross_platform "${extracted_src}" "${SCRIPT_DIR}/${skill}"
+    fi
 
     # Cài đặt vào TARGET_DIR
     if [[ "${MODE}" == "link" ]]; then
@@ -741,6 +771,24 @@ LOCAL_COUNT=0
 REMOTE_COUNT=0
 ERROR_COUNT=0
 
+has_upstream_repo() {
+    local s="$1"
+    case "$s" in
+        animate|animate-expo|animation-performance|animation-vocabulary|apple-design|ask-sonner|\
+        break-ui|emil-design-eng|find-animation-opportunities|improve-animations|mobile-native|\
+        pick-ui-library|prototype|review-animations|write-swift|\
+        taste-skill-web|brandkit|brutalist-skill|gpt-tasteskill|image-to-code-skill|\
+        imagegen-frontend-mobile|imagegen-frontend-web|minimalist-skill|output-skill|\
+        redesign-skill|soft-skill|stitch-skill|taste-skill-v1|\
+        impeccable-design|frontend-design|reverse-engineer-anything)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
 for skill in "${SORTED_SKILLS[@]}"; do
     target_skill_path="${TARGET_DIR}/${skill}"
     local_skill_path="${SCRIPT_DIR}/${skill}"
@@ -755,6 +803,19 @@ for skill in "${SORTED_SKILLS[@]}"; do
     target_already_existed=0
     if [[ -f "${target_skill_path}/SKILL.md" ]]; then
         target_already_existed=1
+    fi
+
+    # Nếu bật SYNC_UPSTREAM và skill có repository upstream
+    if [[ ${SYNC_UPSTREAM} -eq 1 ]] && has_upstream_repo "${skill}"; then
+        if clone_and_install_remote_skill "${skill}"; then
+            if [[ ${target_already_existed} -eq 1 ]]; then
+                log_updated "${skill}"
+                UPDATED_COUNT=$((UPDATED_COUNT + 1))
+            else
+                REMOTE_COUNT=$((REMOTE_COUNT + 1))
+            fi
+            continue
+        fi
     fi
 
     # Nếu chưa có ở Antigravity IDE (hoặc người dùng chỉ định --force / --update / --upgrade):
