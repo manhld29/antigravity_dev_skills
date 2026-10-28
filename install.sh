@@ -206,6 +206,10 @@ copy_dir_cross_platform() {
     local src_dir="$1"
     local dst_dir="$2"
 
+    if [[ "${src_dir}" == "${dst_dir}" ]]; then
+        return 0
+    fi
+
     mkdir -p "${dst_dir}"
 
     if command -v rsync &>/dev/null; then
@@ -226,11 +230,16 @@ while [[ $# -gt 0 ]]; do
             UPDATE_REPO=1
             SYNC_UPSTREAM=1
             FORCE=1
+            UPGRADE_TOOLS=1
             shift
             ;;
         --sync-upstream)
             SYNC_UPSTREAM=1
             FORCE=1
+            shift
+            ;;
+        --upgrade-tools)
+            UPGRADE_TOOLS=1
             shift
             ;;
         --target)
@@ -261,8 +270,9 @@ while [[ $# -gt 0 ]]; do
             echo "Cách dùng: $0 [OPTIONS]"
             echo ""
             echo "Options:"
-            echo "  --update, --upgrade  Cập nhật & force update bộ skills: kéo Git mới nhất, đồng bộ từ upstream GitHub và ghi đè toàn bộ kỹ năng"
+            echo "  --update, --upgrade  Cập nhật & force update bộ skills: kéo Git mới nhất, đồng bộ từ upstream GitHub, nâng cấp CLI tools và ghi đè kỹ năng"
             echo "  --sync-upstream      Đồng bộ các kỹ năng ngoại vi trực tiếp từ các GitHub repository gốc (Emil Kowalski, Taste, Impeccable, Anthropic, REA)"
+            echo "  --upgrade-tools      Nâng cấp các công cụ CLI (Graft, Graphify, Ruff)"
             echo "  --force, -f          Cài đặt lại toàn bộ (ghi đè ngay cả khi skill đã có)"
             echo "  --upgrade-env        Nâng cấp môi trường Python & Node.js của hệ thống lên bản mới nhất"
             echo "  --no-env-install     Bỏ qua bước tự động cài đặt Python/Node.js"
@@ -306,13 +316,25 @@ echo ""
 # ------------------------------------------------------------------------------
 if [[ ${UPDATE_REPO} -eq 1 ]]; then
     log_info "0. Đang kiểm tra và đồng bộ cập nhật từ Git repository..."
+    repo_to_pull=""
     if command -v git &>/dev/null && git -C "${SCRIPT_DIR}" rev-parse --is-inside-work-tree &>/dev/null; then
-        if git -C "${SCRIPT_DIR}" remote get-url origin &>/dev/null; then
-            log_info "  Đang chạy git pull từ remote origin..."
-            if git -C "${SCRIPT_DIR}" pull --ff-only 2>/dev/null || git -C "${SCRIPT_DIR}" pull 2>/dev/null; then
+        repo_to_pull="${SCRIPT_DIR}"
+    elif [[ -d "${HOME}/Documents/Project/dev_skills" ]] && git -C "${HOME}/Documents/Project/dev_skills" rev-parse --is-inside-work-tree &>/dev/null; then
+        repo_to_pull="${HOME}/Documents/Project/dev_skills"
+    fi
+
+    if [[ -n "${repo_to_pull}" ]]; then
+        if git -C "${repo_to_pull}" remote get-url origin &>/dev/null; then
+            log_info "  Đang chạy git pull từ remote origin (${repo_to_pull})..."
+            if git -C "${repo_to_pull}" pull --ff-only 2>/dev/null || git -C "${repo_to_pull}" pull 2>/dev/null; then
                 log_success "Đồng bộ mã nguồn từ Git repository thành công!"
             else
                 log_warning "Không thể git pull tự động (có uncommitted changes hoặc xung đột nhánh). Tiếp tục đồng bộ từ file local."
+            fi
+            # Nếu repo_to_pull khác SCRIPT_DIR, đồng bộ mã nguồn sang SCRIPT_DIR
+            if [[ "${repo_to_pull}" != "${SCRIPT_DIR}" ]]; then
+                log_info "  Đồng bộ mã nguồn từ ${repo_to_pull} sang ${SCRIPT_DIR}..."
+                rsync -a --exclude=".git" "${repo_to_pull}/" "${SCRIPT_DIR}/" 2>/dev/null || true
             fi
         else
             log_info "  Thư mục git chưa có remote origin, tiếp tục với mã nguồn nội bộ."
@@ -530,13 +552,13 @@ log_info "2. Đang kiểm tra các công cụ CLI cần thiết..."
 if command -v graft &>/dev/null; then
     if [[ ${UPGRADE_TOOLS} -eq 1 ]]; then
         log_info "Đang nâng cấp Graft (@nanonets/graft)..."
-        npm install -g @nanonets/graft@latest 2>/dev/null || npm install --prefix "$HOME/.local" -g @nanonets/graft@latest 2>/dev/null || true
+        npm install -g --force @nanonets/graft@latest 2>/dev/null || npm install --prefix "$HOME/.local" -g --force @nanonets/graft@latest 2>/dev/null || true
     fi
     log_success "Graft: Đã sẵn sàng ($(graft --version 2>/dev/null || echo 'OK'))"
 else
     if command -v npm &>/dev/null; then
         log_info "Đang cài đặt Graft (@nanonets/graft)..."
-        npm install -g @nanonets/graft || npm install --prefix "$HOME/.local" -g @nanonets/graft || log_warning "Không thể cài đặt tự động graft qua npm."
+        npm install -g --force @nanonets/graft || npm install --prefix "$HOME/.local" -g --force @nanonets/graft || log_warning "Không thể cài đặt tự động graft qua npm."
         if command -v graft &>/dev/null; then
             log_success "Graft: Cài đặt thành công!"
         fi
@@ -680,12 +702,6 @@ clone_and_install_remote_skill() {
             repo_url="${REPO_TASTE}"
             sub_path="skills/taste-skill"
             ;;
-        brandkit|brutalist-skill|gpt-tasteskill|image-to-code-skill|imagegen-frontend-mobile|\
-        imagegen-frontend-web|minimalist-skill|output-skill|redesign-skill|soft-skill|\
-        stitch-skill|taste-skill-v1)
-            repo_url="${REPO_TASTE}"
-            sub_path="skills/${skill}"
-            ;;
         # Impeccable skill
         impeccable-design)
             repo_url="${REPO_IMPECCABLE}"
@@ -777,10 +793,7 @@ has_upstream_repo() {
         animate|animate-expo|animation-performance|animation-vocabulary|apple-design|ask-sonner|\
         break-ui|emil-design-eng|find-animation-opportunities|improve-animations|mobile-native|\
         pick-ui-library|prototype|review-animations|write-swift|\
-        taste-skill-web|brandkit|brutalist-skill|gpt-tasteskill|image-to-code-skill|\
-        imagegen-frontend-mobile|imagegen-frontend-web|minimalist-skill|output-skill|\
-        redesign-skill|soft-skill|stitch-skill|taste-skill-v1|\
-        impeccable-design|frontend-design|reverse-engineer-anything)
+        taste-skill-web|impeccable-design|frontend-design|reverse-engineer-anything)
             return 0
             ;;
         *)
